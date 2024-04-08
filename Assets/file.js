@@ -6,7 +6,7 @@ const forecast = document.getElementById('forecast');
 
 function getWeather(city) {
     fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=06e0ad8aa9e344a8a546262413b9bc86&units=imperial`,
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=4f6699c207bc8fb45b36a8165870586c&units=imperial`,
       {
         method: "GET",
       }
@@ -50,6 +50,7 @@ searchButton.addEventListener("click", function () {
     currentWeather.innerHTML = "";
     let city = document.getElementById('city').value;
     getWeather(city);
+    forecast.innerHTML = `<h2 class="pt-4">5 Day Forecast</div>`;
   });
 
 function createWeatherBox(city) {
@@ -82,8 +83,12 @@ function createWeatherBox(city) {
 
 function addToSearchHistory() {
     const storedCities = JSON.parse(localStorage.getItem('city'));
+    storedCities.innerHTML = "";
 
     for (const storedCity of storedCities) {
+        if (searchHistory.querySelector(data-name == storedCity.name)) {
+            return;
+        } else {
         let searchedCity = document.createElement("a");
         searchedCity.textContent = storedCity.name;
         searchedCity.setAttribute (
@@ -95,11 +100,13 @@ function addToSearchHistory() {
             'width: 345px; height: 40px;'
         );
         searchHistory.appendChild(searchedCity);
+        }
     }
 }
 
 function getForecast(city) {
     let today = dayjs().format('YYYY-MM-DD');
+    console.log(today);
     let tomorrow = today++;
     let dayTwo = tomorrow++;
     let dayThree = dayTwo++;
@@ -107,7 +114,7 @@ function getForecast(city) {
     let dayFive = dayFour++;
 
     fetch(
-        `https://api.openweathermap.org/data/3.0/onecall/day_summary?lat=${city.lat}&lon=${city.lon}&date=${today}&appid=4f6699c207bc8fb45b36a8165870586c&units=imperial`,
+        `https://api.openweathermap.org/data/3.0/onecall?lat=${city.lat}&lon=${city.lon}&appid=4f6699c207bc8fb45b36a8165870586c&units=imperial`,
         {
         method: "GET",
         }
@@ -124,11 +131,11 @@ function createForecastBox(city) {
     let dailyForecast = document.createElement("div");
     dailyForecast.setAttribute (
         'class',
-        'border'
+        'border my-0'
     );
     dailyForecast.setAttribute (
         'style',
-        'width: 20%;'
+        'width: 20%; height: 330px; background-color: blue; padding-top: 10px;'
     );
     forecast.appendChild(dailyForecast);
 
