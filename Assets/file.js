@@ -42,6 +42,7 @@ function getWeather(city) {
         console.log(city);
         createWeatherBox(city);
         getForecast(city);
+        addToSearchHistory();
       });
 }
 
