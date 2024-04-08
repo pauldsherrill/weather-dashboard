@@ -1,6 +1,7 @@
 const searchedEl = document.getElementById('searched-cities');
 const searchButton = document.getElementById('search');
 const currentWeather = document.getElementById('current-weather');
+const searchHistory = document.getElementById('search-history');
 
 function getWeather(city) {
     fetch(
@@ -20,22 +21,27 @@ function getWeather(city) {
             temp: `Temp: ${data.main.temp}`,
             wind: `Wind: ${data.wind.speed}`,
             humidity: `Humidity: ${data.main.humidity}`,
-            icon: data.weather[0].icon
+            icon: data.weather[0].icon,
+            lat: data.coord.lat,
+            lon: data.coord.lon,
+            dt: data.dt,
           }
-
+        
           let cities = JSON.parse(localStorage.getItem('city'));
+          console.log(Array.isArray(cities));
 
-          if (cities) {
+          if (Array.isArray(cities) === true) {
             cities.push(city);
             localStorage.setItem('city', JSON.stringify(cities));
           } else {
             const citiesInitializer = [city];
             localStorage.setItem('city', JSON.stringify(citiesInitializer));
           }
-        
+
         console.log(city);
         createWeatherBox(city);
-
+        addToSearchHistory(cities);
+        getForecast(city);
       });
 }
 
@@ -71,7 +77,41 @@ function createWeatherBox(city) {
     currentWeather.appendChild(humidity);
 }
 
-function addToSearchHistory() {
-    localStorage.setItem('city', JSON.stringify(city));
+function addToSearchHistory(cities) {
+    const storedCities = cities;
+    for (const storedCity of storedCities) {
+        let searchedCity = document.createElement("a");
+        searchedCity.textContent = storedCity.name;
+        searchedCity.setAttribute (
+            'class',
+            'btn btn-secondary mt-2'
+        );
+        searchedCity.setAttribute (
+            'style',
+            'width: 345px; height: 40px;'
+        );
+        searchHistory.appendChild(searchedCity);
+    }
 }
 
+function getForecast(city) {
+    let today = dayjs().format('YYYY-MM-DD');
+    let tomorrow = today++;
+    let dayTwo = tomorrow++;
+    let dayThree = dayTwo++;
+    let dayFour = dayThree++;
+    let dayFive = dayFour++;
+
+    fetch(
+        `https://api.openweathermap.org/data/3.0/onecall/day_summary?lat=${city.lat}&lon=${city.lon}&date=${today}&appid=4f6699c207bc8fb45b36a8165870586c&units=imperial`,
+        {
+        method: "GET",
+        }
+    )
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        console.log(data);
+      });
+}
