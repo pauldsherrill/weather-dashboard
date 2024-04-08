@@ -19,7 +19,8 @@ function getWeather(city) {
             name: `${data.name}`,
             temp: `Temp: ${data.main.temp}`,
             wind: `Wind: ${data.wind.speed}`,
-            humidity: `Humidity: ${data.main.humidity}`
+            humidity: `Humidity: ${data.main.humidity}`,
+            icon: data.weather[0].icon
           }
         
         console.log(city);
@@ -28,6 +29,7 @@ function getWeather(city) {
 }
 
 searchButton.addEventListener("click", function () {
+    currentWeather.innerHTML = "";
     let city = document.getElementById('city').value;
     getWeather(city);
   });
@@ -36,7 +38,7 @@ function createWeatherBox(city) {
     currentWeather.style.border = "solid black"
 
     let title = document.createElement("h2");
-    title.textContent = city.name;
+    title.textContent = city.name + city.icon;
     currentWeather.appendChild(title);
 
     let temperature = document.createElement("p");
