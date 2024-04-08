@@ -2,6 +2,7 @@ const searchedEl = document.getElementById('searched-cities');
 const searchButton = document.getElementById('search');
 const currentWeather = document.getElementById('current-weather');
 const searchHistory = document.getElementById('search-history');
+const forecast = document.getElementById('forecast');
 
 function getWeather(city) {
     fetch(
@@ -40,7 +41,6 @@ function getWeather(city) {
 
         console.log(city);
         createWeatherBox(city);
-        addToSearchHistory(cities);
         getForecast(city);
       });
 }
@@ -75,10 +75,13 @@ function createWeatherBox(city) {
     let humidity = document.createElement("p");
     humidity.textContent = city.humidity + "%";
     currentWeather.appendChild(humidity);
+
+    createForecastBox(city);
 }
 
-function addToSearchHistory(cities) {
-    const storedCities = cities;
+function addToSearchHistory() {
+    const storedCities = JSON.parse(localStorage.getItem('city'));
+
     for (const storedCity of storedCities) {
         let searchedCity = document.createElement("a");
         searchedCity.textContent = storedCity.name;
@@ -114,4 +117,39 @@ function getForecast(city) {
       .then(function (data) {
         console.log(data);
       });
+}
+
+function createForecastBox(city) {
+    let dailyForecast = document.createElement("div");
+    dailyForecast.setAttribute (
+        'class',
+        'border'
+    );
+    dailyForecast.setAttribute (
+        'style',
+        'width: 20%;'
+    );
+    forecast.appendChild(dailyForecast);
+
+    let title = document.createElement("h2");
+    title.textContent = city.name;
+    let iconImage = document.createElement("img");
+    iconImage.setAttribute(
+        'src',
+        `https://openweathermap.org/img/wn/${city.icon}.png`
+    );
+    dailyForecast.appendChild(title);
+    title.appendChild(iconImage);
+
+    let temperature = document.createElement("p");
+    temperature.textContent = city.temp + " °F";
+    dailyForecast.appendChild(temperature);
+
+    let wind = document.createElement("p");
+    wind.textContent = city.wind + " mph";
+    dailyForecast.appendChild(wind);
+
+    let humidity = document.createElement("p");
+    humidity.textContent = city.humidity + "%";
+    dailyForecast.appendChild(humidity);
 }
