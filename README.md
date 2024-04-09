@@ -12,7 +12,7 @@ I then began working on the js file by fetching the first API I wanted to use fo
 
 ## Usage
 
-CLick on the link to see my deployed webpage 
+CLick on the link to see my deployed webpage https://pauldsherrill.github.io/weather-dashboard/
 
 Once you arrive to my website you will an area where you can search for a city. 
 
