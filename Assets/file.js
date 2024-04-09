@@ -26,15 +26,16 @@ function getWeather(city) {
             dt: data.dt,
           }
         
-          let cities = JSON.parse(localStorage.getItem('city'));
+          let cities = JSON.parse(localStorage.getItem('city')) || [];
+          cities.push(data.name);
 
-          if (Array.isArray(cities) === true) {
-            cities.push(city.name);
-            localStorage.setItem('city', JSON.stringify(cities));
-          } else {
-            const citiesInitializer = [city.name];
-            localStorage.setItem('city', JSON.stringify(citiesInitializer));
-          }
+          //if (Array.isArray(cities) === true) {
+            //cities.push(city.name);
+            //localStorage.setItem('city', JSON.stringify(cities));
+         // } else {
+           // const citiesInitializer = [city.name];
+           // localStorage.setItem('city', JSON.stringify(citiesInitializer));
+         // }
         
         pageLoad();
         createWeatherBox(city);
@@ -70,33 +71,6 @@ function createWeatherBox(city) {
     let humidity = document.createElement("p");
     humidity.textContent = city.humidity + "%";
     currentWeather.appendChild(humidity);
-}
-
-function addToSearchHistory(city) {
-    const storedCities = JSON.parse(localStorage.getItem('city')) || {};
-    storedCities.innerHTML = "";
-
-    for (const storedCity of storedCities) {
-        let searchedCity = document.createElement("button");
-        searchedCity.textContent = storedCity;
-        searchedCity.setAttribute (
-            'class',
-            'btn btn-secondary mt-2'
-        );
-        searchedCity.setAttribute (
-            'id',
-            'searched-city'
-        );
-        searchedCity.setAttribute (
-            'style',
-            'width: 345px; height: 40px;'
-        );
-        searchHistory.appendChild(searchedCity);
-
-        searchedCity.addEventListener('click', function() {
-            handleCityButton(storedCity);
-        });
-        }
 }
 
 function getForecast(city) {
@@ -175,7 +149,30 @@ function handleSearchButton() {
 }
 
 function pageLoad() {
-    addToSearchHistory(city);
+    const storedCities = JSON.parse(localStorage.getItem('city')) || [];
+    storedCities.innerHTML = "";
+
+    for (const storedCity of storedCities) {
+        let searchedCity = document.createElement("button");
+        searchedCity.textContent = storedCity;
+        searchedCity.setAttribute (
+            'class',
+            'btn btn-secondary mt-2'
+        );
+        searchedCity.setAttribute (
+            'id',
+            'searched-city'
+        );
+        searchedCity.setAttribute (
+            'style',
+            'width: 345px; height: 40px;'
+        );
+        searchHistory.appendChild(searchedCity);
+
+        searchedCity.addEventListener('click', function() {
+            handleCityButton(storedCity);
+        });
+        }
 }
 
 pageLoad();
