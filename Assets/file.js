@@ -15,8 +15,6 @@ function getWeather(city) {
         return response.json();
       })
       .then(function (data) {
-        console.log(data);
-  
         let city = {
             name: `${data.name}`,
             temp: `Temp: ${data.main.temp}`,
@@ -29,7 +27,6 @@ function getWeather(city) {
           }
         
           let cities = JSON.parse(localStorage.getItem('city'));
-          console.log(Array.isArray(cities));
 
           if (Array.isArray(cities) === true) {
             cities.push(city);
@@ -38,19 +35,15 @@ function getWeather(city) {
             const citiesInitializer = [city];
             localStorage.setItem('city', JSON.stringify(citiesInitializer));
           }
-
-        console.log(city);
+        
         createWeatherBox(city);
         getForecast(city);
-        addToSearchHistory();
+        addToSearchHistory(city);
       });
 }
 
 searchButton.addEventListener("click", function () {
-    currentWeather.innerHTML = "";
-    let city = document.getElementById('city').value;
-    getWeather(city);
-    forecast.innerHTML = `<h2 class="pt-4">5 Day Forecast</div>`;
+    runPage();
   });
 
 function createWeatherBox(city) {
@@ -77,42 +70,40 @@ function createWeatherBox(city) {
     let humidity = document.createElement("p");
     humidity.textContent = city.humidity + "%";
     currentWeather.appendChild(humidity);
-
-    createForecastBox(city);
 }
 
-function addToSearchHistory() {
+function addToSearchHistory(city) {
     const storedCities = JSON.parse(localStorage.getItem('city'));
     storedCities.innerHTML = "";
 
     for (const storedCity of storedCities) {
-        if (searchHistory.querySelector(data-name == storedCity.name)) {
+        if (city.name == storedCity.name) {
             return;
         } else {
-        let searchedCity = document.createElement("a");
+        let searchedCity = document.createElement("button");
         searchedCity.textContent = storedCity.name;
         searchedCity.setAttribute (
             'class',
             'btn btn-secondary mt-2'
         );
         searchedCity.setAttribute (
+            'id',
+            'searched-city'
+        );
+        searchedCity.setAttribute (
             'style',
             'width: 345px; height: 40px;'
         );
         searchHistory.appendChild(searchedCity);
+
+        searchedCity.addEventListener('click', function() {
+            handleSearchButton(storedCity);
+        });
         }
     }
 }
 
 function getForecast(city) {
-    let today = dayjs().format('YYYY-MM-DD');
-    console.log(today);
-    let tomorrow = today++;
-    let dayTwo = tomorrow++;
-    let dayThree = dayTwo++;
-    let dayFour = dayThree++;
-    let dayFive = dayFour++;
-
     fetch(
         `https://api.openweathermap.org/data/3.0/onecall?lat=${city.lat}&lon=${city.lon}&appid=4f6699c207bc8fb45b36a8165870586c&units=imperial`,
         {
@@ -123,7 +114,17 @@ function getForecast(city) {
         return response.json();
       })
       .then(function (data) {
-        console.log(data);
+        for (i = 0; i < 5; i++) {
+            let city = {
+                temp: `Temp: ${data.daily[i].temp.day}`,
+                wind: `Wind: ${data.daily[i].wind_speed}`,
+                humidity: `Humidity: ${data.daily[i].humidity}`,
+                icon: data.daily[i].weather[0].icon,
+                dt: data.daily[i].dt,
+              }
+    
+            createForecastBox(city);
+        }
       });
 }
 
@@ -139,15 +140,16 @@ function createForecastBox(city) {
     );
     forecast.appendChild(dailyForecast);
 
-    let title = document.createElement("h2");
-    title.textContent = city.name;
+    let title = document.createElement("h3");
+    title.textContent = city.dt;
+    dailyForecast.appendChild(title);
+
     let iconImage = document.createElement("img");
     iconImage.setAttribute(
         'src',
         `https://openweathermap.org/img/wn/${city.icon}.png`
     );
-    dailyForecast.appendChild(title);
-    title.appendChild(iconImage);
+    dailyForecast.appendChild(iconImage);
 
     let temperature = document.createElement("p");
     temperature.textContent = city.temp + " °F";
@@ -161,3 +163,20 @@ function createForecastBox(city) {
     humidity.textContent = city.humidity + "%";
     dailyForecast.appendChild(humidity);
 }
+
+const searchHistoryButton = document.getElementById('searched-city');
+
+function handleSearchButton(storedCity) {
+    currentWeather.innerHTML = "";
+    let city = storedCity.name;
+    getWeather(city);
+    forecast.innerHTML = `<h2 class="pt-4">5 Day Forecast</div>`;
+}
+
+function runPage() {
+    currentWeather.innerHTML = "";
+    let city = document.getElementById('city').value;
+    getWeather(city);
+    forecast.innerHTML = `<h2 class="pt-4">5 Day Forecast</div>`;
+}
+
