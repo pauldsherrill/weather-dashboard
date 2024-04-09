@@ -29,21 +29,21 @@ function getWeather(city) {
           let cities = JSON.parse(localStorage.getItem('city'));
 
           if (Array.isArray(cities) === true) {
-            cities.push(city);
+            cities.push(city.name);
             localStorage.setItem('city', JSON.stringify(cities));
           } else {
-            const citiesInitializer = [city];
+            const citiesInitializer = [city.name];
             localStorage.setItem('city', JSON.stringify(citiesInitializer));
           }
         
+        pageLoad();
         createWeatherBox(city);
         getForecast(city);
-        addToSearchHistory(city);
       });
 }
 
 searchButton.addEventListener("click", function () {
-    runPage();
+    handleSearchButton();
   });
 
 function createWeatherBox(city) {
@@ -73,15 +73,12 @@ function createWeatherBox(city) {
 }
 
 function addToSearchHistory(city) {
-    const storedCities = JSON.parse(localStorage.getItem('city'));
+    const storedCities = JSON.parse(localStorage.getItem('city')) || {};
     storedCities.innerHTML = "";
 
     for (const storedCity of storedCities) {
-        if (city.name == storedCity.name) {
-            return;
-        } else {
         let searchedCity = document.createElement("button");
-        searchedCity.textContent = storedCity.name;
+        searchedCity.textContent = storedCity;
         searchedCity.setAttribute (
             'class',
             'btn btn-secondary mt-2'
@@ -97,10 +94,9 @@ function addToSearchHistory(city) {
         searchHistory.appendChild(searchedCity);
 
         searchedCity.addEventListener('click', function() {
-            handleSearchButton(storedCity);
+            handleCityButton(storedCity);
         });
         }
-    }
 }
 
 function getForecast(city) {
@@ -164,19 +160,23 @@ function createForecastBox(city) {
     dailyForecast.appendChild(humidity);
 }
 
-const searchHistoryButton = document.getElementById('searched-city');
-
-function handleSearchButton(storedCity) {
+function handleCityButton(storedCity) {
     currentWeather.innerHTML = "";
     let city = storedCity.name;
     getWeather(city);
     forecast.innerHTML = `<h2 class="pt-4">5 Day Forecast</div>`;
 }
 
-function runPage() {
+function handleSearchButton() {
     currentWeather.innerHTML = "";
     let city = document.getElementById('city').value;
     getWeather(city);
     forecast.innerHTML = `<h2 class="pt-4">5 Day Forecast</div>`;
 }
+
+function pageLoad() {
+    addToSearchHistory(city);
+}
+
+pageLoad();
 
